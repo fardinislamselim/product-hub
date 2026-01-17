@@ -20,7 +20,7 @@ export const metadata = {
   },
   description: "Discover the best products at unbeatable prices. Shop electronics, fashion, and more at ProductHub.",
   icons: {
-    icon: '/favicon.ico', // Ensure you have a favicon at public/favicon.ico
+    icon: '/favicon.ico'
   },
 };
 
