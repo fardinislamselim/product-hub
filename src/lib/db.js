@@ -1,6 +1,6 @@
-const uri =process.env.MONGODB_URI;
+const uri = process.env.DB_URI;
 const dbName = process.env.DB_NAME;
-const collectionName = {
+export const collectionName = {
     product:"products",
     user:"users",
 }
@@ -15,6 +15,6 @@ const client = new MongoClient(uri, {
   },
 });
 
-export const dbconnect = (cname) => {
+export const dbConnect = (cname) => {
   return client.db(dbName).collection(cname);
 }

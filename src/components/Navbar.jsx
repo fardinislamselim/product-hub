@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { IoBagHandleOutline, IoMenuOutline, IoPersonOutline, IoSearchOutline } from "react-icons/io5";
 import Logo from './Logo';
 
-// Meaningful Sub-component for Navigation Links
+// Sub-component for Navigation Links
 const NavLink = ({ href, children }) => (
   <li>
     <Link 
