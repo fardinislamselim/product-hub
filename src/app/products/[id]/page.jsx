@@ -3,6 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { IoCartOutline, IoChevronBack, IoHeartOutline } from "react-icons/io5";
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const product = await getSingleProduct(id);
+  
+  if (!product) {
+    return {
+      title: "Product Not Found",
+    };
+  }
+
+  return {
+    title: product.name,
+    description: product.description?.slice(0, 160) || "View product details.",
+    openGraph: {
+      images: [product.image],
+    },
+  };
+}
+
 const ProductDetailsPage = async ({ params }) => {
   const { id } = await params;
   const product = await getSingleProduct(id);

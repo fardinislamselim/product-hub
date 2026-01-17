@@ -3,6 +3,11 @@ import ProductCard from "@/components/ProductCard";
 import ProductFilterBar from "@/components/ProductFilterBar";
 import ProductPagination from "@/components/ProductPagination";
 
+export const metadata = {
+  title: "Shop All Products",
+  description: "Browse our extensive collection of premium electronic and lifestyle products.",
+};
+
 const ProductsPage = async (props) => {
   const searchParams = await props.searchParams;
   const search = searchParams?.search || "";
