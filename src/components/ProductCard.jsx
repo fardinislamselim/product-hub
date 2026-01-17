@@ -13,6 +13,11 @@ const ProductCard = ({ product }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
+        {product.category && (
+          <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow-sm">
+            {product.category}
+          </span>
+        )}
       </div>
 
       {/* Info Section */}

@@ -85,13 +85,13 @@ export const getProducts = async ({
 
 export const getSingleProduct = async (id) => {
   try {
-    if (!id || id.length !== 24) return {};
+    if (!id || id.length !== 24) return null;
     const query = { _id: new ObjectId(id) };
     const product = await dbConnect(collectionName.product).findOne(query);
-    return serializeProduct(product) || {};
+    return serializeProduct(product);
   } catch (error) {
     console.error("Failed to fetch single product:", error);
-    return {};
+    return null;
   }
 };
 
