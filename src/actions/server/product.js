@@ -11,13 +11,75 @@ const serializeProduct = (product) => {
   };
 };
 
-export const getProducts = async () => {
+export const getProducts = async ({
+  search = "",
+  category = "",
+  sort = "newest",
+  page = 1,
+  limit = 12,
+  minPrice = null,
+  maxPrice = null,
+} = {}) => {
   try {
-    const products = await dbConnect(collectionName.product).find({}).toArray();
-    return products.map(serializeProduct);
+    const skip = (page - 1) * limit;
+    const filter = {};
+
+    // Search Filter
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Category Filter
+    if (category && category !== "All") {
+      filter.category = category;
+    }
+
+    // Price Filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    let sortOption = {};
+    switch (sort) {
+      case "price_asc":
+        sortOption = { price: 1 };
+        break;
+      case "price_desc":
+        sortOption = { price: -1 };
+        break;
+      case "newest":
+      default:
+        sortOption = { createdAt: -1 };
+        break;
+    }
+
+    const collection = dbConnect(collectionName.product);
+    
+    // Get total count for pagination
+    const totalCount = await collection.countDocuments(filter);
+    
+    const products = await collection
+      .find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    return {
+      products: products.map(serializeProduct),
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page
+    };
   } catch (error) {
     console.error("Failed to fetch products:", error);
-    return [];
+    return { products: [], totalCount: 0, totalPages: 0, currentPage: 1 };
   }
 };
 

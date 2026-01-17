@@ -32,7 +32,7 @@ const LatestProducts = () => {
             <h2 className="text-3xl lg:text-4xl font-extrabold text-[#111827] mb-2">Latest Products</h2>
             <p className="text-[#6b7280] font-medium">Fresh arrivals just for you.</p>
           </div>
-          <Link href="/shop" className="text-[#0070f3] font-bold flex items-center gap-1 hover:underline text-sm lg:text-base">
+          <Link href="/products" className="text-[#0070f3] font-bold flex items-center gap-1 hover:underline text-sm lg:text-base">
             View All Items <span>→</span>
           </Link>
         </div>
