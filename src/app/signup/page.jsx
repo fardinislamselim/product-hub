@@ -1,13 +1,33 @@
 "use client";
 
+import { postUser } from "@/actions/server/auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { MdEmail, MdLock, MdPerson } from "react-icons/md";
 
 export default function SignupPage() {
+
+  const router = useRouter();
+
+
+  const handeleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    const result = await postUser(data);
+    if (result && result.acknowledged) {
+      alert("User created successfully");
+      router.push("/signin");
+    } else {
+      toast.error(result?.error || "Failed to create user");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Decorative Background Elements */}
+      {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full blur-3xl opacity-50 animate-pulse"></div>
       <div className="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 animate-pulse delay-1000"></div>
 
@@ -20,7 +40,7 @@ export default function SignupPage() {
             <p className="text-base-content/60">Join ProductHub today</p>
           </div>
 
-          <form className="space-y-4">
+          <form onSubmit={handeleSubmit} className="space-y-4">
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Full Name</span>
@@ -30,6 +50,7 @@ export default function SignupPage() {
                   <MdPerson className="text-xl" />
                 </div>
                 <input
+                  name="name"
                   type="text"
                   placeholder="John Doe"
                   className="input input-bordered w-full pl-10 focus:input-primary transition-colors"
@@ -47,6 +68,7 @@ export default function SignupPage() {
                   <MdEmail className="text-xl" />
                 </div>
                 <input
+                  name="email"
                   type="email"
                   placeholder="name@example.com"
                   className="input input-bordered w-full pl-10 focus:input-primary transition-colors"
@@ -64,14 +86,17 @@ export default function SignupPage() {
                   <MdLock className="text-xl" />
                 </div>
                 <input
+                  name="password"
                   type="password"
                   placeholder="Create a password"
                   className="input input-bordered w-full pl-10 focus:input-primary transition-colors"
                   required
                 />
               </div>
-               <label className="label">
-                <span className="label-text-alt text-base-content/60">Must be at least 8 characters</span>
+              <label className="label">
+                <span className="label-text-alt text-base-content/60">
+                  Must be at least 8 characters
+                </span>
               </label>
             </div>
 
@@ -80,9 +105,11 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <div className="divider text-base-content/40 text-sm">OR REGISTER WITH</div>
+          <div className="divider text-base-content/40 text-sm">
+            OR REGISTER WITH
+          </div>
 
-           <div className="space-y-3">
+          <div className="space-y-3">
             <button className="btn btn-outline w-full hover:bg-base-200 hover:border-base-300 transition-all gap-3">
               <FaGoogle className="text-red-500 text-lg" />
               <span className="font-medium">Google</span>

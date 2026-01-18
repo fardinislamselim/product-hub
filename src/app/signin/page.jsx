@@ -1,5 +1,6 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { MdEmail, MdLock } from "react-icons/md";
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/items/lists";
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,20 +22,19 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-      if (res.ok) {
+      if (result?.error) {
+        setError(result.error);
+        setLoading(false);
+      } else if (result?.ok) {
         router.push(callbackUrl);
-      } else {
-        const data = await res.json();
-        setError(data.error || "Login failed");
       }
     } catch (err) {
-      setError("Network error");
-    } finally {
+      setError("An error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -51,7 +51,9 @@ export default function LoginPage() {
             <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Welcome Back
             </h2>
-            <p className="text-base-content/60">Sign in to your account to continue</p>
+            <p className="text-base-content/60">
+              Sign in to your account to continue
+            </p>
           </div>
 
           {error && <p className="text-center text-error">{error}</p>}
@@ -93,7 +95,10 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <label className="label">
-                  <Link href="/forgot-password" className="label-text-alt link link-hover text-primary font-medium">
+                  <Link
+                    href="/forgot-password"
+                    className="label-text-alt link link-hover text-primary font-medium"
+                  >
                     Forgot password?
                   </Link>
                 </label>
@@ -109,7 +114,9 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="divider text-base-content/40 text-sm">OR CONTINUE WITH</div>
+          <div className="divider text-base-content/40 text-sm">
+            OR CONTINUE WITH
+          </div>
 
           <div className="space-y-3">
             <button className="btn btn-outline w-full hover:bg-base-200 hover:border-base-300 transition-all gap-3">
@@ -123,8 +130,11 @@ export default function LoginPage() {
           </div>
 
           <p className="text-center text-sm text-base-content/70 mt-4">
-            Don't have an account?{' '}
-            <Link href="/signup" className="link link-primary font-bold hover:text-primary-focus transition-colors">
+            {`Don't have an account?`}{" "}
+            <Link
+              href="/signup"
+              className="link link-primary font-bold hover:text-primary-focus transition-colors"
+            >
               Sign up
             </Link>
           </p>

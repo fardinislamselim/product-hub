@@ -2,6 +2,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import NextAuthProvider from "@/provider/NextAuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,24 +19,27 @@ export const metadata = {
     default: "ProductHub - Premium E-Commerce Store",
     template: "%s | ProductHub",
   },
-  description: "Discover the best products at unbeatable prices. Shop electronics, fashion, and more at ProductHub.",
+  description:
+    "Discover the best products at unbeatable prices. Shop electronics, fashion, and more at ProductHub.",
   icons: {
-    icon: '/favicon.ico'
+    icon: "/favicon.ico",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="light">
-      <body className="antialiased" suppressHydrationWarning>
-        <header>
-          <Navbar />
-        </header>
-        <main>{children}</main>
-        <footer>
-          <Footer />
-        </footer>
-      </body>
-    </html>
+    <NextAuthProvider>
+      <html lang="en" data-theme="light">
+        <body className="antialiased" suppressHydrationWarning>
+          <header>
+            <Navbar />
+          </header>
+          <main>{children}</main>
+          <footer>
+            <Footer />
+          </footer>
+        </body>
+      </html>
+    </NextAuthProvider>
   );
 }

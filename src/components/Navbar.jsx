@@ -1,4 +1,9 @@
+'use client';
+
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { IoBagHandleOutline, IoMenuOutline, IoPersonOutline, IoSearchOutline } from "react-icons/io5";
 import Logo from './Logo';
 
@@ -15,6 +20,9 @@ const NavLink = ({ href, children }) => (
 );
 
 const Navbar = () => {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/products' },
@@ -22,8 +30,18 @@ const Navbar = () => {
     { name: 'About', href: '/about' },
   ];
 
+  useEffect(() => {
+    setIsLoggedIn(!!session?.user);
+  }, [session]);
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    setIsLoggedIn(false);
+    router.push('/');
+  };
+
   return (
-    <nav className="sticky top-0 z-[100] w-full border-b border-base-200 bg-base-100/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-100 w-full border-b border-base-200 bg-base-100/80 backdrop-blur-md">
       <div className="container mx-auto">
         <div className="navbar px-4 py-3">
           {/* Mobile Menu & Logo */}
@@ -32,12 +50,18 @@ const Navbar = () => {
               <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden p-2 mr-1">
                 <IoMenuOutline className="text-2xl" />
               </div>
-              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-3 shadow-xl bg-base-100 rounded-2xl w-60 border border-base-200 gap-1">
+              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-1 p-3 shadow-xl bg-base-100 rounded-2xl w-60 border border-base-200 gap-1">
                 {navLinks.map((link) => (
                   <NavLink key={link.href} href={link.href}>{link.name}</NavLink>
                 ))}
                 <div className="divider my-1"></div>
-                <li><Link href="/signin" className="bg-primary text-white hover:bg-primary-focus py-2.5 justify-center font-bold">Sign In</Link></li>
+                {!isLoggedIn && <li><Link href="/signin" className="bg-primary text-white hover:bg-primary-focus py-2.5 justify-center font-bold">Sign In</Link></li>}
+                {isLoggedIn && (
+                  <>
+                    <li><Link href="/profile" className="hover:bg-base-200 py-2.5 font-medium">Profile</Link></li>
+                    <li><a onClick={handleLogout} className="text-error font-medium py-2.5">Logout</a></li>
+                  </>
+                )}
               </ul>
             </div>
             
@@ -69,7 +93,7 @@ const Navbar = () => {
                 </div>
               </div>
               {/* Cart Dropdown Content */}
-              <div tabIndex={0} className="mt-4 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow-2xl border border-base-200 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div tabIndex={0} className="mt-4 z-1 card card-compact dropdown-content w-80 bg-base-100 shadow-2xl border border-base-200 animate-in fade-in slide-in-from-top-2 duration-200">
                 <div className="card-body p-5">
                   <h3 className="font-extrabold text-lg flex justify-between items-center">
                     Your Bag <span className="badge badge-outline text-xs">3 Items</span>
@@ -88,21 +112,39 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* User Login - Responsive */}
-            <Link 
-              href="/signin" 
-              className="btn btn-primary rounded-xl px-7 hidden md:flex font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all gap-2"
-            >
-              <IoPersonOutline className="text-lg" />
-              Sign In
-            </Link>
-            
-            <Link 
-              href="/profile" 
-              className="btn btn-ghost btn-circle md:hidden hover:bg-primary/10 hover:text-primary transition-colors"
-            >
-              <IoPersonOutline className="text-xl" />
-            </Link>
+            {/* User Login/Logout - Responsive */}
+            {isLoggedIn && session?.user ? (
+              <div className="dropdown dropdown-end">
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle hover:bg-primary/10 hover:text-primary transition-colors">
+                  <IoPersonOutline className="text-xl" />
+                </div>
+                <ul tabIndex={0} className="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-52 border border-base-200">
+                  <li className="menu-title">
+                    <span className="text-sm font-semibold">{session.user.name || session.user.email}</span>
+                  </li>
+                  <li><Link href="/profile">Profile</Link></li>
+                  <li><Link href="/orders">Orders</Link></li>
+                  <li><a onClick={handleLogout} className="text-error">Logout</a></li>
+                </ul>
+              </div>
+            ) : (
+              <>
+                <Link 
+                  href="/signin" 
+                  className="btn btn-primary rounded-xl px-7 hidden md:flex font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all gap-2"
+                >
+                  <IoPersonOutline className="text-lg" />
+                  Sign In
+                </Link>
+                
+                <Link 
+                  href="/signin" 
+                  className="btn btn-ghost btn-circle md:hidden hover:bg-primary/10 hover:text-primary transition-colors"
+                >
+                  <IoPersonOutline className="text-xl" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

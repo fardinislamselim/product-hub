@@ -18,5 +18,6 @@ export default function Home() {
       <CustomerReviews />
       <Newsletter />
     </div>
+    
   );
 }
