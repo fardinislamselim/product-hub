@@ -20,7 +20,7 @@ export default function SignupForm() {
     const result = await postUser(data);
     if (result && result.acknowledged) {
       toast.success("User created successfully");
-      router.push("/signin");
+      router.push("/login");
     } else {
       toast.error(result?.error || "Failed to create user");
     }
@@ -106,7 +106,7 @@ export default function SignupForm() {
 
       <p className="text-center text-sm text-base-content/70 mt-4">
         Already have an account?{' '}
-        <Link href="/signin" className="link link-primary font-bold hover:text-primary-focus transition-colors">
+        <Link href="/login" className="link link-primary font-bold hover:text-primary-focus transition-colors">
           Sign in
         </Link>
       </p>
